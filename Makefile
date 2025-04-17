@@ -24,60 +24,104 @@ check-dependencies:
 
 # Crear clúster de Kind
 create-kind-cluster:
-	@echo "Creando clúster de Kind usando el script..."
-	bash scripts/install-kind-cluster.sh
+    @echo "Introduce el nombre del clúster de Kind (deja vacío para usar el nombre por defecto: $(KIND_CLUSTER_NAME)):"
+    @read cluster_name; \
+    if [ -z "$$cluster_name" ]; then \
+        cluster_name=$(KIND_CLUSTER_NAME); \
+    fi; \
+    echo "Creando clúster de Kind llamado $$cluster_name..."; \
+    KIND_CLUSTER_NAME=$$cluster_name bash scripts/install-kind-cluster.sh
 
 # Eliminar clúster de Kind
 delete-kind-cluster:
-	@echo "Eliminando clúster de Kind llamado $(KIND_CLUSTER_NAME)..."
-	kind delete cluster --name $(KIND_CLUSTER_NAME)
+    @echo "Eliminando clúster de Kind llamado $(KIND_CLUSTER_NAME)..."
+    if ! kind delete cluster --name $(KIND_CLUSTER_NAME); then \
+        echo "Error: Falló la eliminación del clúster de Kind."; \
+        exit 1; \
+    fi
 
 # Configurar Ingress en Kind
 setup-ingress:
-	@echo "Configurando Ingress en Kind..."
-	kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
-	@echo "Esperando a que los pods de Ingress estén listos..."
-	kubectl wait --namespace ingress-nginx \
-	    --for=condition=ready pod \
-	    --selector=app.kubernetes.io/component=controller \
-	    --timeout=90s
+    @echo "Configurando Ingress en Kind..."
+    if ! kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml; then \
+        echo "Error: Falló la configuración de Ingress."; \
+        exit 1; \
+    fi
+    @echo "Esperando a que los pods de Ingress estén listos..."
+    if ! kubectl wait --namespace ingress-nginx \
+        --for=condition=ready pod \
+        --selector=app.kubernetes.io/component=controller \
+        --timeout=90s; then \
+        echo "Error: Los pods de Ingress no están listos."; \
+        exit 1; \
+    fi
 
 # Instalar ArgoCD
 install-argocd:
-	@echo "Instalando ArgoCD usando el script..."
-	bash scripts/install-argocd.sh
+    @echo "Instalando ArgoCD usando el script..."
+    if ! bash scripts/install-argocd.sh; then \
+        echo "Error: Falló la instalación de ArgoCD."; \
+        exit 1; \
+    fi
 
 # Crear un namespace en Kubernetes
 create-ns:
-	@echo "Introduce el nombre del namespace que deseas crear:"
-	@read ns_name; \
-	kubectl create namespace $$ns_name || echo "El namespace $$ns_name ya existe."
+    @echo "Introduce el nombre del namespace que deseas crear:"
+    @read ns_name; \
+    if ! kubectl create namespace $$ns_name; then \
+        echo "Error: Falló la creación del namespace $$ns_name."; \
+        exit 1; \
+    fi
 
 # Instalar Kuma
 install-kuma:
-	@echo "Instalando Kuma versión $(KUMA_VERSION)..."
-	helm repo add kuma $(HELM_REPO) || echo "El repositorio de Helm ya está agregado."
-	helm repo update
-	KUMA_VERSION=$(KUMA_VERSION) bash scripts/install-kuma.sh
+    @echo "Instalando Kuma versión $(KUMA_VERSION)..."
+    if ! helm repo add kuma $(HELM_REPO); then \
+        echo "Error: Falló al agregar el repositorio de Helm."; \
+        exit 1; \
+    fi
+    if ! helm repo update; then \
+        echo "Error: Falló al actualizar el repositorio de Helm."; \
+        exit 1; \
+    fi
+    if ! KUMA_VERSION=$(KUMA_VERSION) bash scripts/install-kuma.sh; then \
+        echo "Error: Falló la instalación de Kuma."; \
+        exit 1; \
+    fi
 
 # Desinstalar Kuma
 uninstall-kuma:
-	@echo "Desinstalando Kuma..."
-	helm uninstall kuma -n kuma-system || echo "Kuma no está instalado."
-	kubectl delete namespace kuma-system || echo "El namespace kuma-system no existe."
+    @echo "Desinstalando Kuma..."
+    if ! helm uninstall kuma -n kuma-system; then \
+        echo "Error: Falló la desinstalación de Kuma."; \
+        exit 1; \
+    fi
+    if ! kubectl delete namespace kuma-system; then \
+        echo "Error: Falló la eliminación del namespace kuma-system."; \
+        exit 1; \
+    fi
 
 # Construir imágenes Docker
 build-backend:
-	@echo "Construyendo imagen para backend..."
-	docker build -t $(BACKEND_IMAGE):$(IMAGE_TAG) ./backend/Docker/backend
+    @echo "Construyendo imagen para backend..."
+    if ! docker build -t $(BACKEND_IMAGE):$(IMAGE_TAG) ./backend/Docker/backend; then \
+        echo "Error: Falló la construcción de la imagen para backend."; \
+        exit 1; \
+    fi
 
 build-backend-1:
-	@echo "Construyendo imagen para backend-1..."
-	docker build -t $(BACKEND_IMAGE_1):$(IMAGE_TAG) ./backend-1/Docker
+    @echo "Construyendo imagen para backend-1..."
+    if ! docker build -t $(BACKEND_IMAGE_1):$(IMAGE_TAG) ./backend-1/Docker; then \
+        echo "Error: Falló la construcción de la imagen para backend-1."; \
+        exit 1; \
+    fi
 
 build-frontend:
-	@echo "Construyendo imagen para frontend..."
-	docker build -t $(FRONTEND_IMAGE):$(IMAGE_TAG) ./frontend/Docker
+    @echo "Construyendo imagen para frontend..."
+    if ! docker build -t $(FRONTEND_IMAGE):$(IMAGE_TAG) ./frontend/Docker; then \
+        echo "Error: Falló la construcción de la imagen para frontend."; \
+        exit 1; \
+    fi
 
 build-database:
 	@echo "Construyendo imagen para database..."
@@ -90,15 +134,24 @@ build-redis:
 # Publicar imágenes Docker
 push-backend:
 	@echo "Publicando imagen para backend..."
-	docker push $(BACKEND_IMAGE):$(IMAGE_TAG)
+    if ! docker push $(BACKEND_IMAGE):$(IMAGE_TAG); then \
+        echo "Error: Falló la publicación de la imagen para backend."; \
+        exit 1; \
+    fi
 
 push-backend-1:
 	@echo "Publicando imagen para backend-1..."
-	docker push $(BACKEND_IMAGE_1):$(IMAGE_TAG)
+    if ! docker push $(BACKEND_IMAGE_1):$(IMAGE_TAG); then \
+        echo "Error: Falló la publicación de la imagen para backend-1."; \
+        exit 1; \
+    fi
 
 push-frontend:
 	@echo "Publicando imagen para frontend..."
-	docker push $(FRONTEND_IMAGE):$(IMAGE_TAG)
+    if ! docker push $(FRONTEND_IMAGE):$(IMAGE_TAG); then \
+        echo "Error: Falló la publicación de la imagen para frontend."; \
+        exit 1; \
+    fi
 
 push-database:
 	@echo "Publicando imagen para database..."
@@ -114,20 +167,26 @@ push-all: push-backend push-frontend push-database push-redis
 
 # Crear aplicación backend en ArgoCD
 create-backend:
-	@echo "Verificando si el namespace 'backend' existe..."
-	@kubectl get namespace backend >/dev/null 2>&1 || { \
-	    echo "El namespace 'backend' no existe. Creándolo..."; \
-	    kubectl create namespace backend; \
-	}
-	@echo "Creando la aplicación backend en ArgoCD..."
-	argocd app create backend \
-	    --repo https://github.com/JaimeHenaoChallange/backend.git \
-	    --revision main \
-	    --path ./helm-charts/backend \
-	    --dest-server https://kubernetes.default.svc \
-	    --dest-namespace backend \
-	    --sync-policy automated \
-	    --project poc
+    @echo "Verificando si el namespace 'backend' existe..."
+    if ! kubectl get namespace backend >/dev/null 2>&1; then \
+        echo "El namespace 'backend' no existe. Creándolo..."; \
+        if ! kubectl create namespace backend; then \
+            echo "Error: Falló la creación del namespace 'backend'."; \
+            exit 1; \
+        fi; \
+    fi
+    @echo "Creando la aplicación backend en ArgoCD..."
+    if ! argocd app create backend \
+        --repo https://github.com/JaimeHenaoChallange/backend.git \
+        --revision main \
+        --path ./helm-charts/backend \
+        --dest-server https://kubernetes.default.svc \
+        --dest-namespace backend \
+        --sync-policy automated \
+        --project poc; then \
+        echo "Error: Falló la creación de la aplicación backend en ArgoCD."; \
+        exit 1; \
+    fi
 	@echo "Aplicación backend creada exitosamente."
 
 # Crear aplicación frontend en ArgoCD
@@ -222,12 +281,18 @@ create-kubeops:
 
 # Desplegar Helm charts
 deploy-frontend:
-	@echo "Desplegando Helm chart para frontend..."
-	helm upgrade --install frontend ./frontend/helm-charts/frontend -n $(K8S_NAMESPACE)
+    @echo "Desplegando Helm chart para frontend..."
+    if ! helm upgrade --install frontend ./frontend/helm-charts/frontend -n $(K8S_NAMESPACE); then \
+        echo "Error: Falló el despliegue del Helm chart para frontend."; \
+        exit 1; \
+    fi
 
 deploy-database:
-	@echo "Desplegando Helm chart para database..."
-	helm upgrade --install database ./backend/helm-charts/database -n $(K8S_NAMESPACE)
+    @echo "Desplegando Helm chart para database..."
+    if ! helm upgrade --install database ./backend/helm-charts/database -n $(K8S_NAMESPACE); then \
+        echo "Error: Falló el despliegue del Helm chart para database."; \
+        exit 1; \
+    fi
 
 deploy-redis:
 	@echo "Desplegando Helm chart para redis..."
@@ -242,12 +307,18 @@ deploy-helm:
 
 # Eliminar despliegues de Helm charts
 delete-backend:
-	@echo "Eliminando despliegue de backend..."
-	helm uninstall backend -n $(K8S_NAMESPACE) || echo "Backend no está desplegado."
+    @echo "Eliminando despliegue de backend..."
+    if ! helm uninstall backend -n $(K8S_NAMESPACE); then \
+        echo "Error: Falló la eliminación del despliegue de backend."; \
+        exit 1; \
+    fi
 
 delete-frontend:
-	@echo "Eliminando despliegue de frontend..."
-	helm uninstall frontend -n $(K8S_NAMESPACE) || echo "Frontend no está desplegado."
+    @echo "Eliminando despliegue de frontend..."
+    if ! helm uninstall frontend -n $(K8S_NAMESPACE); then \
+        echo "Error: Falló la eliminación del despliegue de frontend."; \
+        exit 1; \
+    fi
 
 delete-database:
 	@echo "Eliminando despliegue de database..."
