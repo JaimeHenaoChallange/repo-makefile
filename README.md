@@ -19,14 +19,6 @@ Todas estas herramientas están preinstaladas y disponibles en el contenedor de 
 El repositorio está organizado de la siguiente manera:
 
 ```
-Parece que la sección de la estructura del repositorio no se está mostrando correctamente como un bloque de código en el archivo README.md. Esto puede deberse a un formato incorrecto. A continuación, te muestro cómo corregirlo para que se vea como un bloque de código bien estructurado:
-
-```markdown
-## Estructura del Repositorio
-
-El repositorio está organizado de la siguiente manera:
-
-```
 repo-makefile/
 ├── Makefile                # Archivo principal que incluye los módulos
 ├── makefiles/              # Directorio con los Makefiles modulares
@@ -41,9 +33,6 @@ repo-makefile/
 ### Cambios realizados:
 1. Asegúrate de que el bloque de código esté encerrado entre tres backticks (\`\`\`) antes y después de la estructura.
 2. Elimina cualquier formato adicional que pueda interferir con la visualización del bloque.
-
-Guarda el archivo y verifica nuevamente. Esto debería solucionar el problema y mostrar la estructura correctamente como un bloque de código.
-```
 
 ## Funcionalidades
 
