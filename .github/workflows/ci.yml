@@ -1,0 +1,18 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Configurar entorno
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y kind kubectl helm
+      - name: Ejecutar pruebas
+        run: bash tests/test-makefiles.sh
