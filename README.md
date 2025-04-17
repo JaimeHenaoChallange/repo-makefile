@@ -269,3 +269,35 @@ Este repositorio utiliza las siguientes herramientas y tecnologías:
 - [ ] Crear un script para migrar aplicaciones entre clústeres.
 - [ ] Mejorar la integración con CI/CD.
 
+## Corrección de Espacios en Blanco e Indentación.
+
+Si necesitas corregir la indentación de los archivos .mk para asegurarte de que utilizan tabulaciones en lugar de espacios, puedes ejecutar los siguientes comandos:
+
+```
+# Corregir la indentación en dependencies.mk
+sed -i 's/^    /\t/g' dependencies.mk
+
+# Corregir la indentación en argocd.mk
+sed -i 's/^    /\t/g' argocd.mk
+
+# Corregir la indentación en docker.mk
+sed -i 's/^    /\t/g' docker.mk
+
+# Corregir la indentación en helm.mk
+sed -i 's/^    /\t/g' helm.mk
+
+# Corregir la indentación en kind.mk
+sed -i 's/^    /\t/g' kind.mk
+
+# Corregir la indentación en minikube.mk
+sed -i 's/^    /\t/g' minikube.mk
+
+# Cambiar al directorio principal
+cd ..
+
+# Corregir la indentación en el archivo Makefile principal
+sed -i 's/^    /\t/g' Makefile
+```
+## ¿Por qué es importante?
+
+En los archivos Makefile, las reglas deben estar indentadas con tabulaciones y no con espacios. Si utilizas espacios en lugar de tabulaciones, el make fallará con un error de sintaxis. Estos comandos aseguran que todos los archivos .mk y el archivo principal Makefile estén correctamente formateados.
