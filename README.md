@@ -1,6 +1,21 @@
 # Repo Makefile - Automatización de Tareas
 
+![CI](https://github.com/tu-usuario/repo-makefile/actions/workflows/ci.yml/badge.svg)
+
 Este repositorio contiene configuraciones y `Makefiles` diseñados para automatizar tareas relacionadas con la gestión de clústeres Kubernetes, despliegues con Helm, integración con ArgoCD, y manejo de imágenes Docker. Está pensado para facilitar la configuración y administración de entornos de desarrollo y producción.
+
+## Tabla de Contenidos
+1. [Requisitos Previos](#requisitos-previos)
+2. [Estructura del Repositorio](#estructura-del-repositorio)
+3. [Diagrama](#diagrama)
+4. [Funcionalidades](#funcionalidades)
+5. [Gestión de Minikube](#gestión-de-minikube)
+6. [Uso](#uso)
+7. [Personalización](#personalización)
+8. [Contribuciones](#contribuciones)
+9. [Licencia](#licencia)
+10. [Troubleshooting](#troubleshooting)
+11. [Roadmap](#roadmap)
 
 ## Requisitos Previos
 
@@ -12,7 +27,32 @@ Antes de usar este repositorio, asegúrate de tener instaladas las siguientes he
 - **ArgoCD CLI**: Para gestionar aplicaciones en ArgoCD.
 - **Minikube (opcional)**: Para ejecutar un clúster Kubernetes local.
 
-Todas estas herramientas están preinstaladas y disponibles en el contenedor de desarrollo.
+### Instalación de Herramientas
+Si no tienes estas herramientas instaladas, aquí tienes algunos comandos para instalarlas:
+
+```bash
+# Instalar Docker
+sudo apt-get update && sudo apt-get install -y docker.io
+
+# Instalar kubectl
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+chmod +x kubectl && sudo mv kubectl /usr/local/bin/
+
+# Instalar Helm
+curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+# Instalar Minikube
+curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+chmod +x minikube-linux-amd64 && sudo mv minikube-linux-amd64 /usr/local/bin/minikube
+
+# Instalar Kind
+curl -Lo ./kind https://kind.sigs.k8s.io/dl/latest/kind-linux-amd64
+chmod +x ./kind && sudo mv ./kind /usr/local/bin/kind
+
+# Instalar ArgoCD CLI
+curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+chmod +x /usr/local/bin/argocd
+```
 
 ## Estructura del Repositorio
 
@@ -57,6 +97,19 @@ repo-makefile/
 +------------------------------------------------+
 ```
 
+---
+
+### **5. Añadir un Diagrama Visual**
+El diagrama en texto es útil, pero un diagrama visual en formato `.png` o `.svg` sería más atractivo. Puedes usar herramientas como [draw.io](https://app.diagrams.net/) para crearlo y añadirlo al directorio `docs/`. Luego, enlázalo en el [README.md](http://_vscodecontentref_/1):
+
+```markdown
+## Diagrama de Arquitectura
+
+El siguiente diagrama muestra cómo interactúan los componentes principales del repositorio:
+
+![Diagrama de Arquitectura](docs/architecture-diagram.png)
+```
+
 ## Funcionalidades
 
 ### 1. **Gestión de Clústeres Kubernetes con Kind**
@@ -82,6 +135,13 @@ Para crear un clúster de Minikube, ejecuta:
 
 ```bash
 make create-minikube-cluster
+```
+
+### Eliminar y Crear un Clúster de Minikube
+Para eliminar y crear un clúster de Minikube, ejecuta:
+
+```bash
+minikube delete && minikube start --driver=docker
 ```
 
 ## Uso
@@ -128,6 +188,7 @@ Despliega aplicaciones utilizando ArgoCD o Helm. Por ejemplo:
 ```bash
 make create-backend
 make deploy-frontend
+argocd app sync backend
 ```
 
 ### 7. **Construir y Publicar Imágenes Docker**
@@ -156,9 +217,55 @@ Si deseas contribuir a este repositorio, por favor abre un issue o envía un pul
 
 ## Licencia
 
-Este proyecto está bajo la licencia [MIT](LICENSE).
+Este proyecto está licenciado bajo la [MIT License](LICENSE). Puedes usarlo, modificarlo y distribuirlo libremente, siempre y cuando incluyas la licencia original.
 
 ---
 
 ¡Gracias por usar este repositorio! Si tienes alguna pregunta, no dudes en contactarnos.
+
+## Troubleshooting
+
+### Error: "kubectl no está instalado"
+Asegúrate de que `kubectl` está instalado y disponible en tu `PATH`. Usa el comando:
+
+```bash
+kubectl version --client
+```
+
+---
+
+### **4. Añadir una Sección de Ejemplos**
+Incluye ejemplos prácticos para que los usuarios puedan probar rápidamente:
+
+```markdown
+## Ejemplos
+
+### Desplegar una Aplicación con Helm
+1. Crea un clúster de Kind:
+   ```bash
+   make create-kind-cluster
+```
+
+### Verificar Pods en el Namespace `poc`
+Para verificar los pods en el namespace `poc`, ejecuta:
+
+```bash
+kubectl get pods -n poc
+```
+
+## Créditos
+
+Este repositorio utiliza las siguientes herramientas y tecnologías:
+
+- [Kind](https://kind.sigs.k8s.io/)
+- [Helm](https://helm.sh/)
+- [ArgoCD](https://argo-cd.readthedocs.io/)
+- [Minikube](https://minikube.sigs.k8s.io/)
+
+## Roadmap
+
+- [ ] Añadir soporte para EKS/GKE/AKS.
+- [ ] Implementar pruebas automatizadas para los Makefiles.
+- [ ] Crear un script para migrar aplicaciones entre clústeres.
+- [ ] Mejorar la integración con CI/CD.
 
