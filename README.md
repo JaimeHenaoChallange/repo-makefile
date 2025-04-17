@@ -30,10 +30,6 @@ repo-makefile/
 └── scripts/                # Scripts auxiliares
 ```
 
-### Cambios realizados:
-1. Asegúrate de que el bloque de código esté encerrado entre tres backticks (\`\`\`) antes y después de la estructura.
-2. Elimina cualquier formato adicional que pueda interferir con la visualización del bloque.
-
 ## Funcionalidades
 
 ### 1. **Gestión de Clústeres Kubernetes con Kind**
