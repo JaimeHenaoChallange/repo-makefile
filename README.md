@@ -1,8 +1,10 @@
 # Repo Makefile - Automatización de Tareas
 
-![CI](https://github.com/tu-usuario/repo-makefile/actions/workflows/ci.yml/badge.svg)
+![CI](https://github.com/jaimehenao8126/repo-makefile/actions/workflows/ci.yml/badge.svg)
 
 Este repositorio contiene configuraciones y `Makefiles` diseñados para automatizar tareas relacionadas con la gestión de clústeres Kubernetes, despliegues con Helm, integración con ArgoCD, y manejo de imágenes Docker. Está pensado para facilitar la configuración y administración de entornos de desarrollo y producción.
+
+---
 
 ## Tabla de Contenidos
 1. [Requisitos Previos](#requisitos-previos)
@@ -16,6 +18,9 @@ Este repositorio contiene configuraciones y `Makefiles` diseñados para automati
 9. [Licencia](#licencia)
 10. [Troubleshooting](#troubleshooting)
 11. [Roadmap](#roadmap)
+12. [Corrección de Espacios en Blanco e Indentación](#corrección-de-espacios-en-blanco-e-indentación)
+
+---
 
 ## Requisitos Previos
 
@@ -61,13 +66,31 @@ El repositorio está organizado de la siguiente manera:
 ```
 repo-makefile/
 ├── Makefile                # Archivo principal que incluye los módulos
+├── [CHANGELOG.md](http://_vscodecontentref_/2)            # Registro de cambios
+├── [README.md](http://_vscodecontentref_/3)               # Documentación principal
+├── .github/                # Configuración de GitHub
+│   ├── [ISSUE_TEMPLATE.md](http://_vscodecontentref_/4)   # Plantilla para issues
+│   ├── [PULL_REQUEST_TEMPLATE.md](http://_vscodecontentref_/5) # Plantilla para pull requests
+│   └── workflows/ci.yml    # Configuración de CI
+├── examples/               # Ejemplos de configuración
+│   ├── argocd-app.yaml     # Ejemplo de aplicación ArgoCD
+│   ├── deployment.yaml     # Ejemplo de despliegue Kubernetes
+│   └── values.yaml         # Ejemplo de valores para Helm
 ├── makefiles/              # Directorio con los Makefiles modulares
 │   ├── dependencies.mk     # Verificación de dependencias
 │   ├── kind.mk             # Gestión de clústeres Kind
 │   ├── argocd.mk           # Gestión de aplicaciones ArgoCD
 │   ├── docker.mk           # Construcción y publicación de imágenes Docker
-│   ├── helm.mk             # Despliegue y eliminación de Helm charts
-└── scripts/                # Scripts auxiliares
+│   ├── [helm.mk](http://_vscodecontentref_/6)             # Despliegue y eliminación de Helm charts
+│   ├── minikube.mk         # Gestión de clústeres Minikube
+├── scripts/                # Scripts auxiliares
+│   ├── cleanup.sh          # Limpieza de recursos
+│   ├── install-argocd.sh   # Instalación de ArgoCD
+│   ├── install-kind-cluster.sh # Instalación de Kind
+│   ├── install-kuma.sh     # Instalación de Kuma
+│   └── setup.sh            # Configuración inicial
+└── tests/                  # Pruebas automatizadas
+    └── test-makefiles.sh   # Pruebas para los Makefiles
 ```
 
 ## Diagrama
