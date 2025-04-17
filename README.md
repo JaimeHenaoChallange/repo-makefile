@@ -30,6 +30,31 @@ repo-makefile/
 └── scripts/                # Scripts auxiliares
 ```
 
+## Diagrama
+
++-------------------+       +-------------------+
+|                   |       |                   |
+|    Docker CLI     |       |    Makefiles      |
+|                   |       |                   |
++-------------------+       +-------------------+
+            |                         |
+            v                         v
++------------------------------------------------+
+|                Kubernetes Cluster              |
+|                                                |
+|  +-------------------+   +-------------------+ |
+|  |                   |   |                   | |
+|  |  Ingress          |   |  ArgoCD           | |
+|  |  Controller       |   |                   | |
+|  +-------------------+   +-------------------+ |
+|                                                |
+|  +-------------------+   +-------------------+ |
+|  |                   |   |                   | |
+|  |  Helm             |   |  Applications     | |
+|  |                   |   |                   | |
+|  +-------------------+   +-------------------+ |
++------------------------------------------------+
+
 ## Funcionalidades
 
 ### 1. **Gestión de Clústeres Kubernetes con Kind**
@@ -47,6 +72,15 @@ repo-makefile/
 ### 4. **Despliegue con Helm**
 - Desplegar servicios utilizando Helm charts.
 - Eliminar despliegues de Helm charts.
+
+## Gestión de Minikube
+
+### Crear un Clúster de Minikube
+Para crear un clúster de Minikube, ejecuta:
+
+```bash
+make create-minikube-cluster
+```
 
 ## Uso
 
@@ -125,4 +159,4 @@ Este proyecto está bajo la licencia [MIT](LICENSE).
 ---
 
 ¡Gracias por usar este repositorio! Si tienes alguna pregunta, no dudes en contactarnos.
-````
+
