@@ -66,11 +66,10 @@ El repositorio está organizado de la siguiente manera:
 ```
 repo-makefile/
 ├── Makefile                # Archivo principal que incluye los módulos
-├── [CHANGELOG.md](http://_vscodecontentref_/2)            # Registro de cambios
-├── [README.md](http://_vscodecontentref_/3)               # Documentación principal
+├── [README.md](http://_vscodecontentref_/1)               # Documentación principal
 ├── .github/                # Configuración de GitHub
-│   ├── [ISSUE_TEMPLATE.md](http://_vscodecontentref_/4)   # Plantilla para issues
-│   ├── [PULL_REQUEST_TEMPLATE.md](http://_vscodecontentref_/5) # Plantilla para pull requests
+│   ├── ISSUE_TEMPLATE.md   # Plantilla para issues
+│   ├── PULL_REQUEST_TEMPLATE.md # Plantilla para pull requests
 │   └── workflows/ci.yml    # Configuración de CI
 ├── examples/               # Ejemplos de configuración
 │   ├── argocd-app.yaml     # Ejemplo de aplicación ArgoCD
@@ -79,9 +78,10 @@ repo-makefile/
 ├── makefiles/              # Directorio con los Makefiles modulares
 │   ├── dependencies.mk     # Verificación de dependencias
 │   ├── kind.mk             # Gestión de clústeres Kind
-│   ├── argocd.mk           # Gestión de aplicaciones ArgoCD
+│   ├── argocd.mk           # Gestión de ArgoCD
+│   ├── argocd-apps.mk      # Creación de aplicaciones en ArgoCD
 │   ├── docker.mk           # Construcción y publicación de imágenes Docker
-│   ├── [helm.mk](http://_vscodecontentref_/6)             # Despliegue y eliminación de Helm charts
+│   ├── helm.mk             # Despliegue y eliminación de Helm charts
 │   ├── minikube.mk         # Gestión de clústeres Minikube
 ├── scripts/                # Scripts auxiliares
 │   ├── cleanup.sh          # Limpieza de recursos
