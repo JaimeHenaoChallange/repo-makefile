@@ -1,7 +1,18 @@
-# Descripción del Pull Request
+# Plantilla para Pull Requests
 
-## Cambios Realizados
+## Descripción
+Describe los cambios realizados en este PR.
 
-## Verificaciones
-- [ ] Pruebas locales realizadas.
-- [ ] Documentación actualizada.
+## Tipo de Cambio
+- [ ] Bugfix
+- [ ] Nueva Funcionalidad
+- [ ] Mejora de Documentación
+- [ ] Otro (especificar)
+
+## Checklist
+- [ ] He probado los cambios localmente.
+- [ ] He actualizado la documentación correspondiente.
+- [ ] He añadido pruebas (si aplica).
+
+## Información Adicional
+Incluye cualquier información adicional relevante.

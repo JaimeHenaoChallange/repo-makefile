@@ -33,7 +33,6 @@ Antes de usar este repositorio, asegúrate de tener instaladas las siguientes he
 - **Minikube (opcional)**: Para ejecutar un clúster Kubernetes local.
 
 ### Instalación de Herramientas
-Si no tienes estas herramientas instaladas, aquí tienes algunos comandos para instalarlas:
 
 ```bash
 # Instalar Docker
@@ -66,7 +65,8 @@ El repositorio está organizado de la siguiente manera:
 ```
 repo-makefile/
 ├── Makefile                # Archivo principal que incluye los módulos
-├── [README.md](http://_vscodecontentref_/1)               # Documentación principal
+├── [CHANGELOG.md](http://_vscodecontentref_/1)            # Registro de cambios
+├── [README.md](http://_vscodecontentref_/2)               # Documentación principal
 ├── .github/                # Configuración de GitHub
 │   ├── ISSUE_TEMPLATE.md   # Plantilla para issues
 │   ├── PULL_REQUEST_TEMPLATE.md # Plantilla para pull requests
@@ -76,19 +76,24 @@ repo-makefile/
 │   ├── deployment.yaml     # Ejemplo de despliegue Kubernetes
 │   └── values.yaml         # Ejemplo de valores para Helm
 ├── makefiles/              # Directorio con los Makefiles modulares
+│   ├── [argocd-apps.mk](http://_vscodecontentref_/3)      # Creación de aplicaciones en ArgoCD
+│   ├── [argocd.mk](http://_vscodecontentref_/4)           # Gestión de ArgoCD
 │   ├── dependencies.mk     # Verificación de dependencias
-│   ├── kind.mk             # Gestión de clústeres Kind
-│   ├── argocd.mk           # Gestión de ArgoCD
-│   ├── argocd-apps.mk      # Creación de aplicaciones en ArgoCD
 │   ├── docker.mk           # Construcción y publicación de imágenes Docker
 │   ├── helm.mk             # Despliegue y eliminación de Helm charts
+│   ├── kind.mk             # Gestión de clústeres Kind
 │   ├── minikube.mk         # Gestión de clústeres Minikube
 ├── scripts/                # Scripts auxiliares
+│   ├── [add-repositories.sh](http://_vscodecontentref_/5) # Añadir repositorios a ArgoCD
 │   ├── cleanup.sh          # Limpieza de recursos
+│   ├── [create-app.sh](http://_vscodecontentref_/6)       # Crear aplicaciones en ArgoCD
+│   ├── [create-project.sh](http://_vscodecontentref_/7)   # Crear proyectos en ArgoCD
+│   ├── delete-project.sh   # Eliminar proyectos en ArgoCD
 │   ├── install-argocd.sh   # Instalación de ArgoCD
 │   ├── install-kind-cluster.sh # Instalación de Kind
 │   ├── install-kuma.sh     # Instalación de Kuma
-│   └── setup.sh            # Configuración inicial
+│   ├── [setup.sh](http://_vscodecontentref_/8)            # Configuración inicial
+│   └── [update-project.sh](http://_vscodecontentref_/9)   # Actualizar proyectos en ArgoCD
 └── tests/                  # Pruebas automatizadas
     └── test-makefiles.sh   # Pruebas para los Makefiles
 ```
