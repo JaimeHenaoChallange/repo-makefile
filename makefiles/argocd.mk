@@ -38,12 +38,9 @@ configure-sso:
 	    -p '{"data":{"url":"https://argocd.example.com","oidc.config":"name: SSO\nissuer: https://accounts.google.com\nclientID: <client-id>\nclientSecret: <client-secret>\nredirectURI: https://argocd.example.com/auth/callback\n"}}'
 	@echo "Autenticación SSO configurada exitosamente."
 
-# Configurar acceso inicial
-configure-access:
-	@echo "Configurando acceso inicial para ArgoCD..."
-	ARGOCD_PASSWORD=$(kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath="{.data.password}" | base64 -d)
-	argocd login <Node-IP>:<NodePort> --username admin --password $$ARGOCD_PASSWORD --insecure
-	@echo "Acceso inicial configurado exitosamente."
+# Acceso a argocd-cli
+access-cli:
+	@bash scripts/access-argocd.sh
 
 # Cambiar contraseña de ArgoCD
 change-password:
