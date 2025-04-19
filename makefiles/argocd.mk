@@ -9,44 +9,26 @@ install-argocd:
 # Crear proyecto en ArgoCD con configuraciones personalizadas
 create-project:
 	@echo "Creando un proyecto en ArgoCD..."
-	@read -p "Nombre del proyecto (ejemplo: poc): " PROJECT_NAME; \
-	read -p "Descripción del proyecto (ejemplo: Proyecto de prueba para aplicaciones): " DESCRIPTION; \
-	read -p "Destino del clúster (puedes agregar múltiples destinos separados por comas, ejemplo: https://kubernetes.default.svc,default,https://otro-clúster.svc,namespace): " DEST; \
-	DEST=$${DEST:-https://kubernetes.default.svc,default}; \
-	read -p "Fuente permitida (puedes agregar múltiples fuentes separadas por comas, ejemplo: https://github.com/tu-repo.git,https://otro-repo.git): " SRC; \
-	SRC=$${SRC:-*}; \
-	read -p "Recursos de clúster permitidos (puedes agregar múltiples recursos separados por comas, ejemplo: *,ConfigMap,Secret): " CLUSTER_RESOURCES; \
-	CLUSTER_RESOURCES=$${CLUSTER_RESOURCES:-*}; \
-	if ! argocd proj create $$PROJECT_NAME \
-	    --description "$$DESCRIPTION" \
-	    --dest "$$DEST" \
-	    --src "$$SRC" \
-	    --allow-cluster-resource "$$CLUSTER_RESOURCES"; then \
-	    echo "Error: Falló la creación del proyecto '$$PROJECT_NAME'."; \
+	@if ! bash scripts/create-project.sh; then \
+	    echo "Error: Falló la creación del proyecto."; \
 	    exit 1; \
 	fi
-	@echo "Proyecto '$$PROJECT_NAME' creado exitosamente."
+
+# Actualizar proyecto en ArgoCD
+update-project:
+	@echo "Actualizando un proyecto en ArgoCD..."
+	@if ! bash scripts/update-project.sh; then \
+	    echo "Error: Falló la actualización del proyecto."; \
+	    exit 1; \
+	fi
 
 # Agregar repositorios a ArgoCD
-add-repositories:
+add-repo:
 	@echo "Agregando repositorios a ArgoCD..."
-	if ! argocd repo list | grep -q "https://github.com/JaimeHenaoChallange/backend.git"; then \
-	    if ! argocd repo add https://github.com/JaimeHenaoChallange/backend.git --username <user> --password <password>; then \
-	        echo "Error: Falló al agregar el repositorio 'backend'."; \
-	        exit 1; \
-	    fi; \
-	else \
-	    echo "El repositorio 'backend' ya está agregado."; \
+	@if ! bash scripts/add-repositories.sh; then \
+	    echo "Error: Falló al agregar los repositorios."; \
+	    exit 1; \
 	fi
-	if ! argocd repo list | grep -q "https://github.com/JaimeHenaoChallange/frontend.git"; then \
-	    if ! argocd repo add https://github.com/JaimeHenaoChallange/frontend.git --username <user> --password <password>; then \
-	        echo "Error: Falló al agregar el repositorio 'frontend'."; \
-	        exit 1; \
-	    fi; \
-	else \
-	    echo "El repositorio 'frontend' ya está agregado."; \
-	fi
-	@echo "Repositorios agregados exitosamente."
 
 # Configurar autenticación SSO
 configure-sso:
@@ -104,3 +86,11 @@ configure-project:
 	argocd proj add-source poc \
 	    --src https://github.com/JaimeHenaoChallange/frontend.git
 	@echo "Proyecto 'poc' configurado exitosamente."
+
+# Eliminar proyecto en ArgoCD
+delete-project:
+	@echo "Eliminando un proyecto en ArgoCD..."
+	@if ! bash scripts/delete-project.sh; then \
+	    echo "Error: Falló la eliminación del proyecto."; \
+	    exit 1; \
+	fi
