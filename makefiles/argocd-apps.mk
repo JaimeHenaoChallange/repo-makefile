@@ -4,63 +4,58 @@ REPO_BASE=https://github.com/JaimeHenaoChallange
 
 # Función para verificar y crear namespaces
 define ensure-namespace
-	@echo "Verificando si el namespace '$(1)' existe..."
-	if ! kubectl get namespace $(1) >/dev/null 2>&1; then \
-	    echo "El namespace '$(1)' no existe. Creándolo..."; \
+	@echo "🔍 Verificando si el namespace '$(1)' existe..."
+	@if ! kubectl get namespace $(1) >/dev/null 2>&1; then \
+	    echo "⚠️  El namespace '$(1)' no existe. Creándolo..."; \
 	    if ! kubectl create namespace $(1); then \
-	        echo "Error: Falló la creación del namespace '$(1)'."; \
+	        echo "❌ Error: Falló la creación del namespace '$(1)'."; \
 	        exit 1; \
 	    fi; \
+	    echo "✅ Namespace '$(1)' creado exitosamente."; \
 	fi
 endef
 
 # Función genérica para crear aplicaciones
 define create-app
 	$(call ensure-namespace,$(2))
-	@echo "Creando la aplicación $(1) en ArgoCD..."
+	@echo "🚀 Creando la aplicación '$(1)' en ArgoCD..."
+	@echo "ℹ️  Opciones de path disponibles:"
+	@echo "1) ./Kubernetes"
+	@echo "2) ./helm-charts"
+	@echo "3) ./helm-charts/backend"
+	@echo "4) ./helm-charts/database"
+	@echo "5) ./helm-charts/redis"
+	@read -p "Selecciona el número correspondiente al path (1, 2, 3, 4 o 5): " PATH_OPTION; \
+	case $$PATH_OPTION in \
+	    1) APP_PATH="./Kubernetes";; \
+	    2) APP_PATH="./helm-charts";; \
+	    3) APP_PATH="./helm-charts/backend";; \
+	    4) APP_PATH="./helm-charts/database";; \
+	    5) APP_PATH="./helm-charts/redis";; \
+	    *) echo "❌ Opción inválida. Abortando."; exit 1;; \
+	esac; \
+	if [ ! -d "$$APP_PATH" ] || [ -z "$$(ls -A $$APP_PATH 2>/dev/null)" ]; then \
+	    echo "❌ Error: El path seleccionado '$$APP_PATH' no existe o está vacío. Por favor verifica."; \
+	    echo "💡 Sugerencia: Asegúrate de que el directorio exista y contenga los manifiestos necesarios."; \
+	    exit 1; \
+	fi; \
 	if ! argocd app create $(1) \
 	    --repo $(REPO_BASE)/$(3).git \
 	    --revision main \
-	    --path ./helm-charts/$(3) \
+	    --path $$APP_PATH \
 	    --dest-server $(ARGOCD_SERVER) \
 	    --dest-namespace $(2) \
 	    --sync-policy automated \
 	    --project $(4); then \
-	    echo "Error: Falló la creación de la aplicación $(1) en ArgoCD."; \
+	    echo "❌ Error: Falló la creación de la aplicación '$(1)' en ArgoCD."; \
 	    exit 1; \
-	fi
-	@echo "Aplicación $(1) creada exitosamente."
+	fi; \
+	echo "🎉 Aplicación '$(1)' creada exitosamente en el proyecto '$(4)' con el path $$APP_PATH."
 endef
 
 # Crear aplicaciones específicas
 create-backend:
-	$(call ensure-namespace,backend)
-	@if [ -z "$(PROJECT_NAME)" ]; then \
-	    echo "❌ Error: Debes proporcionar el nombre del proyecto usando la variable PROJECT_NAME."; \
-	    echo "ℹ️  Proyectos disponibles en ArgoCD:"; \
-	    argocd proj list -o name; \
-	    echo "💡 Ejemplo: make create-backend PROJECT_NAME=poc"; \
-	    exit 1; \
-	fi
-	@if ! argocd proj get $(PROJECT_NAME) >/dev/null 2>&1; then \
-	    echo "❌ Error: El proyecto '$(PROJECT_NAME)' no existe en ArgoCD."; \
-	    echo "💡 Por favor, verifica el nombre del proyecto o créalo antes de continuar."; \
-	    exit 1; \
-	fi
-	@echo "✅ Usando el proyecto: $(PROJECT_NAME)"
-	@echo "🚀 Creando la aplicación 'backend' en ArgoCD..."
-	if ! argocd app create backend \
-	    --repo $(REPO_BASE)/backend.git \
-	    --revision main \
-	    --path ./helm-charts/backend \
-	    --dest-server $(ARGOCD_SERVER) \
-	    --dest-namespace backend \
-	    --sync-policy automated \
-	    --project $(PROJECT_NAME); then \
-	    echo "❌ Error: Falló la creación de la aplicación 'backend' en ArgoCD."; \
-	    exit 1; \
-	fi
-	@echo "🎉 Aplicación 'backend' creada exitosamente en el proyecto '$(PROJECT_NAME)'."
+	$(call create-app,backend,backend,backend,$(PROJECT_NAME))
 
 create-frontend:
 	$(call create-app,frontend,frontend,frontend,$(PROJECT_NAME))
