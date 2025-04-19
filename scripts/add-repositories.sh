@@ -14,28 +14,33 @@ add_repository() {
         echo "✅ El repositorio '$REPO_URL' ya está agregado."
     else
         echo "🔧 Agregando el repositorio '$REPO_URL' a ArgoCD..."
-        if ! argocd repo add "$REPO_URL" --username "$USERNAME" --password "$PASSWORD"; then
-            echo "❌ Error: Falló al agregar el repositorio '$REPO_URL'."
-            exit 1
+        if [ -n "$USERNAME" ] && [ -n "$PASSWORD" ]; then
+            if ! argocd repo add "$REPO_URL" --username "$USERNAME" --password "$PASSWORD"; then
+                echo "❌ Error: Falló al agregar el repositorio '$REPO_URL'."
+                exit 1
+            fi
+        else
+            if ! argocd repo add "$REPO_URL"; then
+                echo "❌ Error: Falló al agregar el repositorio '$REPO_URL'."
+                exit 1
+            fi
         fi
         echo "✅ Repositorio '$REPO_URL' agregado exitosamente."
     fi
 }
 
-# Lista de repositorios a agregar
-declare -A REPOSITORIES=(
-    ["https://github.com/JaimeHenaoChallange/backend.git"]="<user>"
-    ["https://github.com/JaimeHenaoChallange/frontend.git"]="<user>"
-)
+# Solicitar datos del repositorio al usuario
+read -p "Introduce la URL del repositorio: " REPO_URL
+if [ -z "$REPO_URL" ]; then
+    echo "❌ Error: La URL del repositorio no puede estar vacía."
+    exit 1
+fi
 
-# Solicitar contraseña para los repositorios
-read -sp "Introduce la contraseña para los repositorios: " PASSWORD
+read -p "Introduce el nombre de usuario (deja vacío si no aplica): " USERNAME
+read -sp "Introduce la contraseña (deja vacío si no aplica): " PASSWORD
 echo
 
-# Agregar cada repositorio
-for REPO_URL in "${!REPOSITORIES[@]}"; do
-    USERNAME="${REPOSITORIES[$REPO_URL]}"
-    add_repository "$REPO_URL" "$USERNAME" "$PASSWORD"
-done
+# Agregar el repositorio
+add_repository "$REPO_URL" "$USERNAME" "$PASSWORD"
 
-echo "✅ Todos los repositorios han sido procesados."
+echo "✅ Proceso completado."
