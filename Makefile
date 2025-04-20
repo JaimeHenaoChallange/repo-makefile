@@ -15,3 +15,4 @@ include makefiles/docker.mk
 include makefiles/helm.mk
 include makefiles/minikube.mk
 include makefiles/argocd-apps.mk
+include makefiles/kuma.mk
